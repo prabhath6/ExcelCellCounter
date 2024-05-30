@@ -1,0 +1,101 @@
+﻿@page "/"
+@using System.Text.RegularExpressions
+@rendermode InteractiveServer
+
+<section id="input-controls">
+    <div class="grid">
+    <nav>
+        <button class="outline" @onclick="DisplaySingleRangeView">Single Range</button>
+        <button class="outline" @onclick="DisplayMultipleRangesView">Multiple Ranges</button>
+    </nav>
+    </div>
+</section>
+    
+<section id="output">
+
+      <div class="container">
+
+        @if(@showSingleRangeView) {
+            <div id="singleRangeView" class="view">
+                <div class="single-range">
+                    <label for="singleRange">Enter a single range:</label>
+                    <input name="singleRange" type="text" id="singleRange" placeholder="A1:B2" @bind="SingleRange">
+                    <button @onclick="CalculateSingleRange">Calculate</button>
+                    <div id="singleRangeResult">Total cells: @totalCells</div>
+                </div>
+            </div>
+        }
+        else {
+            <div id="multipleRangesView" class="view">
+                <div class="multiple-ranges">
+                    <label for="multipleRanges">Enter multiple ranges (one per line):</label>
+                    <textarea id="multipleRanges" rows="6" 
+                    @bind="MultipleRanges"
+                    placeholder="A2:XEZ7838
+B5:C10
+D2:D50"></textarea>
+                    <button @onclick="CalculateMultipleRanges">Calculate</button>
+                    <div id="multipleRangesResult">Results:</div>
+                </div>
+            </div>    
+        }
+    </div>
+
+</section>
+
+@code {
+    private bool showSingleRangeView = true;
+    private string SingleRange = "";
+    private string MultipleRanges = "";
+    private int totalCells = 0;
+
+    private void DisplaySingleRangeView() {
+        showSingleRangeView = true;
+        SingleRange = "";
+        totalCells = 0;
+    }
+    private void DisplayMultipleRangesView() {
+        showSingleRangeView = false;
+        MultipleRanges = "";
+    }
+
+    private void CalculateSingleRange() {
+        CalculateCells(SingleRange.Trim());
+    }
+
+    private void CalculateMultipleRanges() {
+        Console.WriteLine(MultipleRanges.Trim().Split("\n").Count());
+    }
+
+    private int ColumnToNumber(string column)
+    {
+        int number = 0;
+        foreach (char c in column)
+        {
+            number = number * 26 + (c - 'A' + 1);
+        }
+        return number;
+    }
+
+    private void CalculateCells(string range) {
+        string rangePattern = @"^([A-Z]+)(\d+):([A-Z]+)(\d+)$";
+        var matchedRanges = Regex.Match(range, rangePattern);
+
+        if (!matchedRanges.Success) {
+            totalCells = 0;
+        }
+
+        string startCol = matchedRanges.Groups[1].Value;
+        int startRow = Convert.ToInt32(matchedRanges.Groups[2].Value);
+        string endCol = matchedRanges.Groups[3].Value;
+        int endRow = Convert.ToInt32(matchedRanges.Groups[4].Value);
+
+        int startColNumber = ColumnToNumber(startCol);
+        int endColNumber = ColumnToNumber(endCol);
+
+        int numRows = endRow - startRow + 1;
+        int numCols = endColNumber - startColNumber + 1;
+
+        totalCells = numRows * numCols;
+    }
+}
