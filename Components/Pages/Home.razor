@@ -12,20 +12,19 @@
 </section>
     
 <section id="output">
-
       <div class="container">
-
-        @if(@showSingleRangeView) {
+        @if (@showSingleRangeView)
+        {
             <div id="singleRangeView" class="view">
                 <div class="single-range">
                     <label for="singleRange">Enter a single range:</label>
                     <input name="singleRange" type="text" id="singleRange" placeholder="A1:B2" @bind="SingleRange">
                     <button @onclick="CalculateSingleRange">Calculate</button>
-                    <div id="singleRangeResult">Total cells: @totalCells</div>
                 </div>
             </div>
         }
-        else {
+        else 
+        {
             <div id="multipleRangesView" class="view">
                 <div class="multiple-ranges">
                     <label for="multipleRanges">Enter multiple ranges (one per line):</label>
@@ -35,65 +34,75 @@
 B5:C10
 D2:D50"></textarea>
                     <button @onclick="CalculateMultipleRanges">Calculate</button>
-                    <section id="tables">
-                        <h2>Results:</h2>
-                        <div class="overflow-auto">
-                        <table class="striped">
-                            <thead>
-                            <tr>
-                                <th scope="col">#</th>
-                                <th scope="col">Columns</th>
-                                <th scope="col">Rows</th>
-                                <th scope="col">Total Cells</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                                @if (tableData != null)
-                                {
-                                    @for (int i = 0; i < tableData.Length; i++)
-                                    {
-                                        <tr>
-                                            <th scope="row">@(i + 1)</th>
-                                            <td>@tableData[i].Rows</td>
-                                            <td>@tableData[i].Columns</td>
-                                            <td>@tableData[i].TotalCells</td>
-                                        </tr>
-                                    }
-                                }
-                            </tbody>
-                        </table>
-                        </div>
-                    </section>
                 </div>
             </div>    
         }
+        <section id="tables">
+            <h2>Results:</h2>
+            <div class="overflow-auto">
+                <table class="striped">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Rows</th>
+                        <th scope="col">Columns</th>
+                        <th scope="col">Total Cells</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < tableData.Length; i++)
+                        {
+                            <tr>
+                                <th scope="row">@(i + 1)</th>
+                                <td>@tableData[i].Rows</td>
+                                <td>@tableData[i].Columns</td>
+                                <td>@tableData[i].TotalCells</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
     </div>
-
 </section>
 
 @code {
     private bool showSingleRangeView = true;
     private string SingleRange = "";
     private string MultipleRanges = "";
-    private int totalCells = 0;
-    private TableData[]? tableData = [new TableData { Rows = 1, Columns = 2, TotalCells = 2 }];
+    private TableData[] tableData = [];
 
-    private void DisplaySingleRangeView() {
+    private void DisplaySingleRangeView()
+    {
         showSingleRangeView = true;
         SingleRange = "";
-        totalCells = 0;
+        tableData = [];
     }
-    private void DisplayMultipleRangesView() {
+
+    private void DisplayMultipleRangesView()
+    {
         showSingleRangeView = false;
         MultipleRanges = "";
+        tableData = [];
     }
 
-    private void CalculateSingleRange() {
-        CalculateCells(SingleRange.Trim());
+    private void CalculateSingleRange()
+    {
+        tableData = new TableData[] { CalculateCells(SingleRange.Trim()) };
     }
 
-    private void CalculateMultipleRanges() {
-        Console.WriteLine(MultipleRanges.Trim().Split("\n").Count());
+    private void CalculateMultipleRanges()
+    {
+        string[]? inputRanges = MultipleRanges.Trim().Split("\n");
+        CalculateMultipleRanges(inputRanges);
+    }
+
+    private void CalculateMultipleRanges(string[]? inputRanges)
+    {
+        if (inputRanges != null) 
+        {
+            tableData = inputRanges.Select(x => this.CalculateCells(x.Trim())).ToArray();
+        }
     }
 
     private int ColumnToNumber(string column)
@@ -106,12 +115,13 @@ D2:D50"></textarea>
         return number;
     }
 
-    private void CalculateCells(string range) {
+    private TableData CalculateCells(string range)
+    {
         string rangePattern = @"^([A-Z]+)(\d+):([A-Z]+)(\d+)$";
         var matchedRanges = Regex.Match(range, rangePattern);
 
         if (!matchedRanges.Success) {
-            totalCells = 0;
+            tableData = [];
         }
 
         string startCol = matchedRanges.Groups[1].Value;
@@ -125,7 +135,7 @@ D2:D50"></textarea>
         int numRows = endRow - startRow + 1;
         int numCols = endColNumber - startColNumber + 1;
 
-        totalCells = numRows * numCols;
+        return new TableData { Rows = numRows, Columns = numCols, TotalCells = numCols * numRows };
     }
 
     private class TableData
