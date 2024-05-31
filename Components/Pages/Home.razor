@@ -35,7 +35,35 @@
 B5:C10
 D2:D50"></textarea>
                     <button @onclick="CalculateMultipleRanges">Calculate</button>
-                    <div id="multipleRangesResult">Results:</div>
+                    <section id="tables">
+                        <h2>Results:</h2>
+                        <div class="overflow-auto">
+                        <table class="striped">
+                            <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Columns</th>
+                                <th scope="col">Rows</th>
+                                <th scope="col">Total Cells</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                @if (tableData != null)
+                                {
+                                    @for (int i = 0; i < tableData.Length; i++)
+                                    {
+                                        <tr>
+                                            <th scope="row">@(i + 1)</th>
+                                            <td>@tableData[i].Rows</td>
+                                            <td>@tableData[i].Columns</td>
+                                            <td>@tableData[i].TotalCells</td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                        </div>
+                    </section>
                 </div>
             </div>    
         }
@@ -48,6 +76,7 @@ D2:D50"></textarea>
     private string SingleRange = "";
     private string MultipleRanges = "";
     private int totalCells = 0;
+    private TableData[]? tableData = [new TableData { Rows = 1, Columns = 2, TotalCells = 2 }];
 
     private void DisplaySingleRangeView() {
         showSingleRangeView = true;
@@ -97,5 +126,12 @@ D2:D50"></textarea>
         int numCols = endColNumber - startColNumber + 1;
 
         totalCells = numRows * numCols;
+    }
+
+    private class TableData
+    {
+        public int Rows { get; set; }
+        public int Columns { get; set; }
+        public int TotalCells { get; set; }
     }
 }
