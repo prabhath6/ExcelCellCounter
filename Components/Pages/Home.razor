@@ -1,5 +1,6 @@
 ﻿@page "/"
 @using System.Text.RegularExpressions
+@inject IJSRuntime JS
 @rendermode InteractiveServer
 
 <section id="input-controls">
@@ -61,6 +62,11 @@ D2:D50"></textarea>
                         }
                     </tbody>
                 </table>
+                @if (tableData.Length > 0 )
+                {
+                    <h3>Export to Excel</h3>
+                    <button @onclick="@(() => ExportToExcel(@tableData))">Export to Excel</button>
+                }
             </div>
         </section>
     </div>
@@ -135,7 +141,12 @@ D2:D50"></textarea>
         int numRows = endRow - startRow + 1;
         int numCols = endColNumber - startColNumber + 1;
 
-        return new TableData { Rows = numRows, Columns = numCols, TotalCells = numCols * numRows };
+        return new TableData { Rows = numRows, Columns = numCols, TotalCells = numCols * numRows, Range = range };
+    }
+
+    private async Task ExportToExcel(TableData[] data)
+    {
+        await JS.InvokeVoidAsync("exportToExcel", data.ToList()).ConfigureAwait(false);
     }
 
     private class TableData
@@ -143,5 +154,6 @@ D2:D50"></textarea>
         public int Rows { get; set; }
         public int Columns { get; set; }
         public int TotalCells { get; set; }
+        public string Range { get; set; }
     }
 }
