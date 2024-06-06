@@ -9,9 +9,6 @@ jobs:
   deploy:
     # use ubuntu-latest image to run steps on
     runs-on: ubuntu-latest
-    permissions:
-      packages: write
-      contents: read
     strategy:
       matrix:
         dotnet-version: [ '8.0.x' ]
