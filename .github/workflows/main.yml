@@ -9,15 +9,18 @@ jobs:
   deploy-to-github-pages:
     # use ubuntu-latest image to run steps on
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet-version: [ '8.0.x' ]
     steps:
         # uses GitHub's checkout action to checkout code form the master branch
-        - uses: actions/checkout@v2
+        - uses: actions/checkout@v4
         
         # sets up .NET Core SDK 8.0
         - name: Setup .NET Core SDK
-          uses: actions/setup-dotnet@v1
+          uses: actions/setup-dotnet@v3
           with:
-            dotnet-version: 8.0
+            dotnet-version: ${{ matrix.dotnet-version }}
 
         # publishes Blazor project to the release-folder
         - name: Publish .NET Core Project
