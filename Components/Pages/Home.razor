@@ -11,7 +11,7 @@
     </nav>
     </div>
 </section>
-    
+
 <section id="output">
       <div class="container">
         @if (@showSingleRangeView)
@@ -24,19 +24,19 @@
                 </div>
             </div>
         }
-        else 
+        else
         {
             <div id="multipleRangesView" class="view">
                 <div class="multiple-ranges">
                     <label for="multipleRanges">Enter multiple ranges (one per line):</label>
-                    <textarea id="multipleRanges" rows="6" 
+                    <textarea id="multipleRanges" rows="6"
                     @bind="MultipleRanges"
                     placeholder="A2:XEZ7838
 B5:C10
 D2:D50"></textarea>
                     <button @onclick="CalculateMultipleRanges">Calculate</button>
                 </div>
-            </div>    
+            </div>
         }
         <section id="tables">
             <h2>Results:</h2>
@@ -45,6 +45,7 @@ D2:D50"></textarea>
                     <thead>
                     <tr>
                         <th scope="col">#</th>
+                        <th scope="col">Range</th>
                         <th scope="col">Rows</th>
                         <th scope="col">Columns</th>
                         <th scope="col">Total Cells</th>
@@ -55,6 +56,7 @@ D2:D50"></textarea>
                         {
                             <tr>
                                 <th scope="row">@(i + 1)</th>
+                                <td>@tableData[i].Range</td>
                                 <td>@tableData[i].Rows</td>
                                 <td>@tableData[i].Columns</td>
                                 <td>@tableData[i].TotalCells</td>
@@ -105,7 +107,7 @@ D2:D50"></textarea>
 
     private void CalculateMultipleRanges(string[]? inputRanges)
     {
-        if (inputRanges != null) 
+        if (inputRanges != null)
         {
             tableData = inputRanges.Select(x => this.CalculateCells(x.Trim())).ToArray();
         }
