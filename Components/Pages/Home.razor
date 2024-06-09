@@ -38,6 +38,14 @@ D2:D50"></textarea>
                 </div>
             </div>
         }
+
+        <section id="error-section">
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="error-message">@errorMessage</div>
+            }
+        </section>
+
         <section id="tables">
             <h2>Results:</h2>
             <div class="overflow-auto">
@@ -78,25 +86,38 @@ D2:D50"></textarea>
     private bool showSingleRangeView = true;
     private string SingleRange = "";
     private string MultipleRanges = "";
+    private string errorMessage = "";
     private TableData[] tableData = [];
 
     private void DisplaySingleRangeView()
     {
         showSingleRangeView = true;
         SingleRange = "";
+        errorMessage = "";
         tableData = [];
     }
 
     private void DisplayMultipleRangesView()
     {
         showSingleRangeView = false;
+        errorMessage = "";
         MultipleRanges = "";
         tableData = [];
     }
 
     private void CalculateSingleRange()
     {
-        tableData = new TableData[] { CalculateCells(SingleRange.Trim()) };
+        TableData? result = CalculateCells(SingleRange.Trim());
+        if (result == null)
+        {
+            errorMessage = "Invalid range provided.";
+            tableData = Array.Empty<TableData>();
+        }
+        else
+        {
+            errorMessage = "";
+            tableData = new TableData[] { result };
+        }
     }
 
     private void CalculateMultipleRanges()
@@ -109,7 +130,17 @@ D2:D50"></textarea>
     {
         if (inputRanges != null)
         {
-            tableData = inputRanges.Select(x => this.CalculateCells(x.Trim())).ToArray();
+            var results = inputRanges.Select(x => this.CalculateCells(x.Trim())).ToArray();
+            if (results.Any(r => r == null))
+            {
+                errorMessage = "One or more invalid ranges provided.";
+                tableData = Array.Empty<TableData>();
+            }
+            else
+            {
+                errorMessage = "";
+                tableData = results!;
+            }
         }
     }
 
@@ -123,13 +154,14 @@ D2:D50"></textarea>
         return number;
     }
 
-    private TableData CalculateCells(string range)
+    private TableData? CalculateCells(string range)
     {
         string rangePattern = @"^([A-Z]+)(\d+):([A-Z]+)(\d+)$";
         var matchedRanges = Regex.Match(range, rangePattern);
 
         if (!matchedRanges.Success) {
             tableData = [];
+            return null;
         }
 
         string startCol = matchedRanges.Groups[1].Value;
