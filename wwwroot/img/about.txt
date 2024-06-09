@@ -1,0 +1,6 @@
+This favicon was generated using the following font:
+
+- Font Title: Arima
+- Font Author: Copyright 2020 The Arima Project Authors (https://github.com/NDISCOVER/Arima-Font)
+- Font Source: https://fonts.gstatic.com/s/arima/v5/neIWzCqmt4Aup_qE1nFWqxI1RZX1YTA-pQGOyYw2fw.ttf
+- Font License: SIL Open Font License, 1.1 (http://scripts.sil.org/OFL))

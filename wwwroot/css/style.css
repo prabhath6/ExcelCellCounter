@@ -1,0 +1,18 @@
+.error-message {
+    color: rgba(218, 13, 13, 0.858);
+    font-weight: bold;
+    margin-bottom: 1em;
+}
+
+.header-content {
+    display: flex;
+}
+
+.logo {
+    padding-right: 0.5rem;
+    max-height: 2rem;
+}
+
+.main-layout {
+    padding-top: 1rem;
+}
